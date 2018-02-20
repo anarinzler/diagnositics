@@ -1,0 +1,51 @@
+---
+title: "Diagnostics"
+author: "Ana Bennett"
+date: "2/20/2018"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+## Test
+```{r load_things, message = FALSE, echo = TRUE}
+#install ggfortify
+library(tidyverse)
+library(ggfortify)
+
+my_cars_data <- read.csv("../data/my_data.csv")
+head(my_cars_data)
+```
+
+## Model 
+```{r model, message = FALSE, echo = TRUE, results ='asis'}
+mod1 <- lm(mpg ~ wt, data = mtcars)
+summary(mod1)$coef %>% broom::tidy(.) %>%
+  knitr::kable(., format = "html")
+```
+
+## Association is linear
+```{r, echo = FALSE}
+mtcars %>%
+  ggplot(., aes(x = wt, y = mpg))+
+  geom_point()+
+  geom_smooth(method = lm, formula = y ~ poly(x,2))
+```
+
+## Mean is Zero
+```{r}
+summary(mod1)
+#calc mean of residuals
+mean(mod1$residuals)
+```
+
+## Check for autocorrelation
+No autocorrelation
+```{r}
+acf(mod1$residuals)
+```
+## Normality of Residuals
+```{r}
+autoplot(mod1, which = 2)
+```
